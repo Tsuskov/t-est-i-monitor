@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  @apply bg-slate-950 text-white font-sans;
+  @apply bg-slate-50 text-slate-900 font-sans;
 }
 
 @keyframes fadeIn {
@@ -47,34 +47,8 @@ body {
   .animate-pulse-status {
     animation: pulse-status 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
-}
 
-@layer components {
-  .status-dot {
-    @apply inline-block rounded-full;
-  }
-
-  .status-ok {
-    @apply bg-green-500;
-  }
-
-  .status-degraded {
-    @apply bg-yellow-500;
-  }
-
-  .status-down {
-    @apply bg-red-500;
-  }
-
-  .status-unknown {
-    @apply bg-gray-500;
-  }
-
-  .transition-smooth {
-    @apply transition-all duration-200 ease-in-out;
-  }
-
-  .hover-lift {
-    @apply hover:shadow-lg hover:-translate-y-1 transition-all duration-200;
+  .card-shadow {
+    @apply shadow-sm hover:shadow-md transition-shadow;
   }
 }

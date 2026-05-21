@@ -9,13 +9,13 @@ interface PraxisCardProps {
 const getStatusColor = (status: string) => {
   switch (status) {
     case 'ok':
-      return 'text-green-400 border-green-400/30 hover:border-green-400/60 hover:shadow-[0_0_20px_rgba(34,197,94,0.1)]';
+      return 'border-green-200 hover:border-green-300 hover:shadow-md';
     case 'degraded':
-      return 'text-yellow-400 border-yellow-400/30 hover:border-yellow-400/60 hover:shadow-[0_0_20px_rgba(234,179,8,0.1)]';
+      return 'border-yellow-200 hover:border-yellow-300 hover:shadow-md';
     case 'down':
-      return 'text-red-400 border-red-400/30 hover:border-red-400/60 hover:shadow-[0_0_20px_rgba(239,68,68,0.1)]';
+      return 'border-red-200 hover:border-red-300 hover:shadow-md';
     default:
-      return 'text-gray-400 border-gray-400/30 hover:border-gray-400/60';
+      return 'border-slate-200 hover:border-slate-300 hover:shadow-md';
   }
 };
 
@@ -28,25 +28,27 @@ const getStatusDot = (status: string) => {
     case 'down':
       return 'bg-red-500 animate-pulse-status';
     default:
-      return 'bg-gray-500';
+      return 'bg-slate-400';
   }
 };
 
 const getServiceDotColor = (status: string) => {
   switch (status) {
     case 'ok':
-      return 'bg-green-500';
+      return 'bg-green-400';
     case 'degraded':
-      return 'bg-yellow-500';
+      return 'bg-yellow-400';
     case 'down':
-      return 'bg-red-500';
+      return 'bg-red-400';
     default:
-      return 'bg-gray-600';
+      return 'bg-slate-300';
   }
 };
 
 export const PraxisCard: React.FC<PraxisCardProps> = ({ praxis, onClick }) => {
   const okCount = praxis.services.filter(s => s.status === 'ok').length;
+  const degradedCount = praxis.services.filter(s => s.status === 'degraded').length;
+  const downCount = praxis.services.filter(s => s.status === 'down').length;
   const statusClass = getStatusColor(praxis.overall_status);
   const dotClass = getStatusDot(praxis.overall_status);
 
@@ -54,37 +56,54 @@ export const PraxisCard: React.FC<PraxisCardProps> = ({ praxis, onClick }) => {
     <div
       onClick={onClick}
       className={`
-        bg-slate-900 border-2 rounded-lg p-4 cursor-pointer
-        hover:bg-slate-800 transition-all duration-200 hover-lift
+        bg-white border-2 rounded-xl p-6 cursor-pointer
+        transition-all duration-200 hover-lift card-shadow
         ${statusClass}
       `}
     >
-      <div className="flex items-start justify-between mb-3">
-        <div>
-          <h3 className="font-bold text-lg">{praxis.name}</h3>
-          <p className="text-sm text-slate-400">{praxis.location}</p>
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex-1">
+          <h3 className="font-bold text-lg text-slate-900">{praxis.name}</h3>
+          <p className="text-sm text-slate-500">{praxis.location}</p>
         </div>
-        <div className={`w-3 h-3 rounded-full ${dotClass}`}></div>
+        <div className={`w-3 h-3 rounded-full ${dotClass} flex-shrink-0`}></div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div className="flex gap-1">
           {praxis.services.map(service => (
             <div
               key={service.id}
-              className={`w-2 h-2 rounded-full transition-all duration-200 ${getServiceDotColor(service.status)}`}
+              className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${getServiceDotColor(service.status)}`}
               title={`${service.kind}: ${service.status}`}
             />
           ))}
         </div>
 
-        <div className="text-sm text-slate-300 font-medium">
-          {okCount} von {praxis.services.length} Dienste ok
+        <div className="grid grid-cols-3 gap-2 text-center text-xs">
+          <div className="bg-green-50 rounded p-2">
+            <div className="font-semibold text-green-700">{okCount}</div>
+            <div className="text-green-600 text-xs">OK</div>
+          </div>
+          <div className="bg-yellow-50 rounded p-2">
+            <div className="font-semibold text-yellow-700">{degradedCount}</div>
+            <div className="text-yellow-600 text-xs">Warn</div>
+          </div>
+          <div className="bg-red-50 rounded p-2">
+            <div className="font-semibold text-red-700">{downCount}</div>
+            <div className="text-red-600 text-xs">Down</div>
+          </div>
         </div>
 
-        <div className="pt-2 border-t border-slate-700/50">
+        <div className="pt-3 border-t border-slate-200">
           <span className="text-xs text-slate-500">Status: </span>
-          <span className="text-xs font-semibold uppercase tracking-wide">{praxis.overall_status}</span>
+          <span className={`text-xs font-semibold uppercase tracking-wide ${
+            praxis.overall_status === 'ok' ? 'text-green-600' :
+            praxis.overall_status === 'degraded' ? 'text-yellow-600' :
+            'text-red-600'
+          }`}>
+            {praxis.overall_status}
+          </span>
         </div>
       </div>
     </div>
