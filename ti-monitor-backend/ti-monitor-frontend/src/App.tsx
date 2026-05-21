@@ -1,122 +1,87 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useState } from 'react';
+import type { Praxis } from './types';
+import { useMonitor } from './hooks/useMonitor';
+import { Header } from './components/Header';
+import { AlertBanner } from './components/AlertBanner';
+import { PraxisGrid } from './components/PraxisGrid';
+import { ServiceTable } from './components/ServiceTable';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { praxen, alerts, wsConnected, stats, dismissAlert } = useMonitor();
+  const [selectedPraxis, setSelectedPraxis] = useState<Praxis | null>(null);
+
+  const criticalCount = praxen.filter(p => p.overall_status === 'down').length;
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="min-h-screen bg-slate-950">
+      <Header wsConnected={wsConnected} criticalCount={criticalCount} />
+      <AlertBanner alerts={alerts} onDismiss={dismissAlert} />
 
-      <div className="ticks"></div>
+      <main className="max-w-7xl mx-auto p-6">
+        {selectedPraxis ? (
+          <div className="space-y-6">
+            <button
+              onClick={() => setSelectedPraxis(null)}
+              className="flex items-center gap-2 text-slate-400 hover:text-white transition"
+            >
+              ← Zurück zur Übersicht
+            </button>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
+              <div className="mb-6">
+                <h2 className="text-3xl font-bold mb-2">{selectedPraxis.name}</h2>
+                <p className="text-slate-400">{selectedPraxis.location}</p>
+              </div>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="bg-slate-800 rounded p-4">
+                  <p className="text-slate-400 text-sm">Gesamtstatus</p>
+                  <p className="text-2xl font-bold capitalize">{selectedPraxis.overall_status}</p>
+                </div>
+                <div className="bg-slate-800 rounded p-4">
+                  <p className="text-slate-400 text-sm">OK Dienste</p>
+                  <p className="text-2xl font-bold">
+                    {selectedPraxis.services.filter(s => s.status === 'ok').length}/{selectedPraxis.services.length}
+                  </p>
+                </div>
+                <div className="bg-slate-800 rounded p-4">
+                  <p className="text-slate-400 text-sm">Zuletzt geprüft</p>
+                  <p className="text-sm font-mono">
+                    {new Date().toLocaleTimeString('de-DE')}
+                  </p>
+                </div>
+              </div>
+
+              <h3 className="text-xl font-bold mb-4">Dienste</h3>
+              <ServiceTable services={selectedPraxis.services} />
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold">Übersicht</h2>
+              <div className="flex gap-6 text-sm">
+                <div>
+                  <p className="text-slate-400">OK</p>
+                  <p className="text-2xl font-bold text-green-400">{praxen.length - stats.degraded - stats.down}</p>
+                </div>
+                <div>
+                  <p className="text-slate-400">Degradiert</p>
+                  <p className="text-2xl font-bold text-yellow-400">{stats.degraded}</p>
+                </div>
+                <div>
+                  <p className="text-slate-400">Ausfälle</p>
+                  <p className="text-2xl font-bold text-red-400">{stats.down}</p>
+                </div>
+              </div>
+            </div>
+
+            <PraxisGrid praxen={praxen} onSelectPraxis={setSelectedPraxis} />
+          </div>
+        )}
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;
