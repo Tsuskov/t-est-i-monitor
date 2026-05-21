@@ -1,0 +1,17 @@
+# Rust
+/ti-monitor-backend/target/
+Cargo.lock
+
+# Node
+/ti-monitor-backend/ti-monitor-frontend/node_modules/
+/ti-monitor-backend/ti-monitor-frontend/dist/
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
