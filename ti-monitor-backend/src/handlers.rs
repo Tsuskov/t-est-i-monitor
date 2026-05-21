@@ -3,29 +3,28 @@ use axum::{
     http::StatusCode,
     Json,
 };
-use std::sync::Arc;
-use parking_lot::RwLock;
 use uuid::Uuid;
 use serde_json::json;
 
 use crate::models::{Praxis, Certificate, Status, calculate_cert_severity};
+use crate::AppState;
 
 pub async fn health() -> &'static str {
     "OK"
 }
 
 pub async fn get_praxen(
-    State(state): State<Arc<RwLock<Vec<Praxis>>>>,
+    State(state): State<AppState>,
 ) -> Json<Vec<Praxis>> {
-    let praxen = state.read();
+    let praxen = state.praxen.read();
     Json(praxen.clone())
 }
 
 pub async fn get_praxis_detail(
-    State(state): State<Arc<RwLock<Vec<Praxis>>>>,
+    State(state): State<AppState>,
     Path(id): Path<Uuid>,
 ) -> Result<Json<Praxis>, StatusCode> {
-    let praxen = state.read();
+    let praxen = state.praxen.read();
     praxen
         .iter()
         .find(|p| p.id == id)
@@ -35,10 +34,10 @@ pub async fn get_praxis_detail(
 }
 
 pub async fn get_service_detail(
-    State(state): State<Arc<RwLock<Vec<Praxis>>>>,
+    State(state): State<AppState>,
     Path((praxis_id, service_id)): Path<(Uuid, Uuid)>,
 ) -> Result<Json<serde_json::Value>, StatusCode> {
-    let praxen = state.read();
+    let praxen = state.praxen.read();
     let praxis = praxen
         .iter()
         .find(|p| p.id == praxis_id)
@@ -64,9 +63,9 @@ pub async fn get_service_detail(
 }
 
 pub async fn get_certificates(
-    State(state): State<Arc<RwLock<Vec<Praxis>>>>,
+    State(state): State<AppState>,
 ) -> Json<Vec<Certificate>> {
-    let praxen = state.read();
+    let praxen = state.praxen.read();
     let mut certs = Vec::new();
 
     for praxis in praxen.iter() {
@@ -92,10 +91,10 @@ pub async fn get_certificates(
 }
 
 pub async fn ping_service(
-    State(state): State<Arc<RwLock<Vec<Praxis>>>>,
+    State(state): State<AppState>,
     Path((praxis_id, service_id)): Path<(Uuid, Uuid)>,
 ) -> Result<Json<serde_json::Value>, StatusCode> {
-    let mut praxen = state.write();
+    let mut praxen = state.praxen.write();
     let praxis = praxen
         .iter_mut()
         .find(|p| p.id == praxis_id)
@@ -127,9 +126,9 @@ pub async fn ping_service(
 }
 
 pub async fn get_praxis_summary(
-    State(state): State<Arc<RwLock<Vec<Praxis>>>>,
+    State(state): State<AppState>,
 ) -> Json<serde_json::Value> {
-    let praxen = state.read();
+    let praxen = state.praxen.read();
     
     let mut ok_count = 0;
     let mut degraded_count = 0;
@@ -154,10 +153,10 @@ pub async fn get_praxis_summary(
 }
 
 pub async fn get_services_by_status(
-    State(state): State<Arc<RwLock<Vec<Praxis>>>>,
+    State(state): State<AppState>,
     Path(status_filter): Path<String>,
 ) -> Result<Json<Vec<serde_json::Value>>, StatusCode> {
-    let praxen = state.read();
+    let praxen = state.praxen.read();
     let target_status = match status_filter.as_str() {
         "ok" => Status::Ok,
         "degraded" => Status::Degraded,

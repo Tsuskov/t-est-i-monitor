@@ -5,6 +5,9 @@ use rand::{SeedableRng, RngCore};
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::time::sleep;
+use tokio::sync::broadcast;
+use serde_json::json;
+use crate::ws::MonitorMessage;
 
 pub struct MonitorStats {
     pub down_services: usize,
@@ -12,10 +15,16 @@ pub struct MonitorStats {
     pub total_services: usize,
 }
 
-pub async fn run_monitor_loop(state: Arc<RwLock<Vec<Praxis>>>) {
+pub async fn run_monitor_loop(
+    state: Arc<RwLock<Vec<Praxis>>>,
+    tx: Arc<broadcast::Sender<MonitorMessage>>,
+) {
     let mut rng = rand::rngs::StdRng::from_entropy();
     let mut cycle = 0;
-    let mut service_states: std::collections::HashMap<uuid::Uuid, ServiceState> = std::collections::HashMap::new();
+    let mut service_states: std::collections::HashMap<uuid::Uuid, ServiceState> =
+        std::collections::HashMap::new();
+    let mut last_alert_cycle: std::collections::HashMap<uuid::Uuid, usize> =
+        std::collections::HashMap::new();
 
     loop {
         sleep(Duration::from_secs(10)).await;
@@ -26,9 +35,12 @@ pub async fn run_monitor_loop(state: Arc<RwLock<Vec<Praxis>>>) {
         for praxis in praxen.iter_mut() {
             for service in &mut praxis.services {
                 let service_id = service.id;
+                let old_status = service.status;
 
                 // Get or create service state tracking
-                let state_entry = service_states.entry(service_id).or_insert_with(ServiceState::new);
+                let state_entry = service_states
+                    .entry(service_id)
+                    .or_insert_with(ServiceState::new);
 
                 // Update down/degraded counter
                 if state_entry.down_cycles > 0 {
@@ -55,6 +67,27 @@ pub async fn run_monitor_loop(state: Arc<RwLock<Vec<Praxis>>>) {
                         state_entry.degraded_cycles = rng.next_u32() as usize % 2 + 1;
                     } else {
                         service.status = Status::Ok;
+                    }
+                }
+
+                // Send alert if status changed to Down
+                if old_status != Status::Down && service.status == Status::Down {
+                    let last_alert = last_alert_cycle.get(&service_id).copied().unwrap_or(0);
+                    if cycle - last_alert > 5 {
+                        // Only alert if > 5 cycles since last alert
+                        let alert_msg = MonitorMessage {
+                            r#type: "alert".to_string(),
+                            data: json!({
+                                "praxis_id": praxis.id.to_string(),
+                                "praxis_name": praxis.name,
+                                "service": service.kind.as_str(),
+                                "message": format!("{} ist ausfallen", service.kind.as_str()),
+                                "severity": "critical",
+                                "timestamp": Utc::now(),
+                            }),
+                        };
+                        let _ = tx.send(alert_msg);
+                        last_alert_cycle.insert(service_id, cycle);
                     }
                 }
 
@@ -95,6 +128,24 @@ pub async fn run_monitor_loop(state: Arc<RwLock<Vec<Praxis>>>) {
         }
 
         let stats = calculate_stats(&praxen);
+
+        // Send state update via WebSocket
+        let state_update = MonitorMessage {
+            r#type: "state_update".to_string(),
+            data: json!({
+                "praxen": praxen.clone(),
+                "stats": {
+                    "down_services": stats.down_services,
+                    "degraded_services": stats.degraded_services,
+                    "total_services": stats.total_services,
+                },
+                "cycle": cycle,
+                "timestamp": Utc::now(),
+            }),
+        };
+
+        let _ = tx.send(state_update);
+
         tracing::info!(
             "Monitor cycle {}: {} praxen | {} down | {} degraded | {} total services",
             cycle,

@@ -1,31 +1,50 @@
 mod models;
 mod handlers;
 mod simulator;
+mod ws;
 
 use axum::{
     routing::{get, post},
+    extract::State,
     Router,
 };
 use std::sync::Arc;
 use parking_lot::RwLock;
 use tower_http::cors::CorsLayer;
+use tokio::sync::broadcast;
+
+#[derive(Clone)]
+pub struct AppState {
+    pub praxen: Arc<RwLock<Vec<models::Praxis>>>,
+    pub tx: Arc<broadcast::Sender<ws::MonitorMessage>>,
+}
 
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
 
     // Initialize shared state
-    let app_state = Arc::new(RwLock::new(vec![]));
+    let praxen = Arc::new(RwLock::new(vec![]));
     
     // Populate with mock data
-    let mut praxen = app_state.write();
-    *praxen = models::init_mock_praxen();
-    drop(praxen);
+    let mut data = praxen.write();
+    *data = models::init_mock_praxen();
+    drop(data);
+
+    // Create broadcast channel for WebSocket updates (max 100 messages in buffer)
+    let (tx, _rx) = broadcast::channel(100);
+    let tx = Arc::new(tx);
+
+    let app_state = AppState {
+        praxen: praxen.clone(),
+        tx: tx.clone(),
+    };
 
     // Start simulator task
-    let state_for_simulator = app_state.clone();
+    let state_for_simulator = praxen.clone();
+    let tx_for_simulator = tx.clone();
     tokio::spawn(async move {
-        simulator::run_monitor_loop(state_for_simulator).await;
+        simulator::run_monitor_loop(state_for_simulator, tx_for_simulator).await;
     });
 
     // Build router
@@ -38,6 +57,7 @@ async fn main() {
         .route("/api/services/by-status/:status", get(handlers::get_services_by_status))
         .route("/api/certs", get(handlers::get_certificates))
         .route("/api/praxen/:id/services/:sid/ping", post(handlers::ping_service))
+        .route("/ws/monitor", get(ws::websocket_handler))
         .with_state(app_state)
         .layer(CorsLayer::permissive());
 
@@ -46,5 +66,6 @@ async fn main() {
         .unwrap();
     
     println!("🚀 Server running on http://127.0.0.1:3000");
+    println!("📡 WebSocket available at ws://127.0.0.1:3000/ws/monitor");
     axum::serve(listener, app).await.unwrap();
 }
