@@ -9,13 +9,13 @@ interface PraxisCardProps {
 const getStatusColor = (status: string) => {
   switch (status) {
     case 'ok':
-      return 'text-green-400 border-green-400/30';
+      return 'text-green-400 border-green-400/30 hover:border-green-400/60 hover:shadow-[0_0_20px_rgba(34,197,94,0.1)]';
     case 'degraded':
-      return 'text-yellow-400 border-yellow-400/30';
+      return 'text-yellow-400 border-yellow-400/30 hover:border-yellow-400/60 hover:shadow-[0_0_20px_rgba(234,179,8,0.1)]';
     case 'down':
-      return 'text-red-400 border-red-400/30';
+      return 'text-red-400 border-red-400/30 hover:border-red-400/60 hover:shadow-[0_0_20px_rgba(239,68,68,0.1)]';
     default:
-      return 'text-gray-400 border-gray-400/30';
+      return 'text-gray-400 border-gray-400/30 hover:border-gray-400/60';
   }
 };
 
@@ -26,7 +26,7 @@ const getStatusDot = (status: string) => {
     case 'degraded':
       return 'bg-yellow-500 animate-bounce';
     case 'down':
-      return 'bg-red-500 animate-pulse';
+      return 'bg-red-500 animate-pulse-status';
     default:
       return 'bg-gray-500';
   }
@@ -55,7 +55,7 @@ export const PraxisCard: React.FC<PraxisCardProps> = ({ praxis, onClick }) => {
       onClick={onClick}
       className={`
         bg-slate-900 border-2 rounded-lg p-4 cursor-pointer
-        hover:border-slate-600 hover:bg-slate-800 transition-all
+        hover:bg-slate-800 transition-all duration-200 hover-lift
         ${statusClass}
       `}
     >
@@ -72,19 +72,19 @@ export const PraxisCard: React.FC<PraxisCardProps> = ({ praxis, onClick }) => {
           {praxis.services.map(service => (
             <div
               key={service.id}
-              className={`w-2 h-2 rounded-full ${getServiceDotColor(service.status)}`}
+              className={`w-2 h-2 rounded-full transition-all duration-200 ${getServiceDotColor(service.status)}`}
               title={`${service.kind}: ${service.status}`}
             />
           ))}
         </div>
 
-        <div className="text-sm text-slate-400">
+        <div className="text-sm text-slate-300 font-medium">
           {okCount} von {praxis.services.length} Dienste ok
         </div>
 
         <div className="pt-2 border-t border-slate-700/50">
           <span className="text-xs text-slate-500">Status: </span>
-          <span className="text-xs font-semibold uppercase">{praxis.overall_status}</span>
+          <span className="text-xs font-semibold uppercase tracking-wide">{praxis.overall_status}</span>
         </div>
       </div>
     </div>
