@@ -9,11 +9,11 @@ interface AlertBannerProps {
 const getSeverityColor = (severity: string) => {
   switch (severity) {
     case 'critical':
-      return 'bg-red-50 border-red-200 text-red-800';
+      return 'bg-red-900 bg-opacity-20 border-red-700 border-opacity-50 text-red-300';
     case 'warning':
-      return 'bg-yellow-50 border-yellow-200 text-yellow-800';
+      return 'bg-yellow-900 bg-opacity-20 border-yellow-700 border-opacity-50 text-yellow-300';
     default:
-      return 'bg-slate-50 border-slate-200 text-slate-800';
+      return 'bg-slate-800 border-slate-700 border-opacity-50 text-slate-300';
   }
 };
 
@@ -21,7 +21,7 @@ export const AlertBanner: React.FC<AlertBannerProps> = ({ alerts, onDismiss }) =
   if (alerts.length === 0) return null;
 
   return (
-    <div className="bg-slate-100 border-b border-slate-200 px-6 py-3">
+    <div className="bg-slate-900 border-b border-slate-700 px-6 py-3">
       <div className="max-w-7xl mx-auto space-y-2 max-h-32 overflow-y-auto">
         {alerts.slice(0, 3).map((alert, i) => (
           <div

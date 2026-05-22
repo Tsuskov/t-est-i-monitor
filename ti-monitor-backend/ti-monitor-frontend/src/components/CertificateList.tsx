@@ -25,18 +25,19 @@ export const CertificateList: React.FC<CertificateListProps> = ({ certificates }
       <div className="flex items-center justify-between">
         <div className="flex gap-4">
           <div>
-            <p className="text-slate-400 text-sm">Kritisch</p>
+            <p className="label-uppercase">Kritisch</p>
             <p className="text-2xl font-bold text-red-400">{critical}</p>
           </div>
           <div>
-            <p className="text-slate-400 text-sm">Warnung</p>
-            <p className="text-2xl font-bold text-yellow-400">{warning}</p>
+            <p className="label-uppercase">Warnung</p>
+            <p className="text-2xl font-bold" style={{ color: 'var(--knicks-orange)' }}>{warning}</p>
           </div>
         </div>
         <select
           value={sortBy}
           onChange={e => setSortBy(e.target.value as 'expiry' | 'severity')}
-          className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-white hover:border-slate-600 transition"
+          className="card-knicks px-3 py-2 text-sm transition"
+          style={{ border: '2px solid var(--knicks-orange)' }}
         >
           <option value="expiry">Nach Ablauf sortieren</option>
           <option value="severity">Nach Schweregrad sortieren</option>
@@ -47,12 +48,12 @@ export const CertificateList: React.FC<CertificateListProps> = ({ certificates }
         {sorted.map(cert => (
           <div
             key={cert.service_id}
-            className="flex items-center justify-between p-3 bg-slate-800 rounded border border-slate-700 hover:border-slate-600 transition"
+            className="card-knicks flex items-center justify-between p-3 rounded transition"
           >
             <div className="flex-1">
               <p className="font-mono text-xs font-semibold">{cert.service_name}</p>
-              <p className="text-xs text-slate-400">{cert.praxis_name}</p>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs opacity-70">{cert.praxis_name}</p>
+              <p className="text-xs opacity-50 mt-1">
                 {new Date(cert.expires_at).toLocaleDateString('de-DE')}
               </p>
             </div>

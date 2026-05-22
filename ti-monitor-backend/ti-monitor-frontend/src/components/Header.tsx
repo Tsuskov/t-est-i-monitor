@@ -3,34 +3,38 @@ import React from 'react';
 interface HeaderProps {
   wsConnected: boolean;
   criticalCount: number;
+  theme: 'dark' | 'light';
+  onThemeToggle: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ wsConnected, criticalCount }) => {
+export const Header: React.FC<HeaderProps> = ({ wsConnected, criticalCount, theme, onThemeToggle }) => {
   return (
-    <header className="bg-white border-b border-slate-200 shadow-sm">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-5">
+    <header className="card-knicks border-b-2" style={{ borderBottomColor: 'var(--pastel-blue)', borderLeft: 'none', borderRight: 'none', borderTop: 'none', borderRadius: '0' }}>
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="text-3xl font-bold text-medical-600">🏥</div>
+          <div className="text-3xl font-bold">🏥</div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">TI-Monitor</h1>
-            <p className="text-sm text-slate-500">Telematik-Infrastruktur Dashboard</p>
+            <h1 className="text-2xl font-bold" style={{ color: 'var(--pastel-orange)' }}>TI-Monitor</h1>
+            <p className="text-xs" style={{ color: '#9CA3AF' }}>Telematik-Infrastruktur</p>
           </div>
         </div>
         
         <div className="flex items-center gap-6">
           <div className="text-right">
-            <div className="text-xs text-slate-500 uppercase tracking-wide">Status</div>
-            <div className={`text-sm font-semibold flex items-center gap-2 ${wsConnected ? 'text-green-600' : 'text-red-600'}`}>
-              <span className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
-              {wsConnected ? 'Verbunden' : 'Getrennt'}
+            <p className="label-uppercase">Verbindung</p>
+            <div className={`text-sm font-semibold flex items-center gap-2`} style={{ color: wsConnected ? '#10B981' : '#EF4444' }}>
+              <span className={`w-3 h-3 rounded-full ${wsConnected ? 'animate-pulse' : ''}`} style={{ backgroundColor: wsConnected ? '#10B981' : '#EF4444' }}></span>
+              {wsConnected ? 'Online' : 'Offline'}
             </div>
           </div>
           
           {criticalCount > 0 && (
-            <div className="bg-red-50 text-red-700 px-4 py-2 rounded-lg border border-red-200 font-semibold text-sm">
-              ⚠️ {criticalCount} kritisch
+            <div className="badge-orange">
+              ⚠️ {criticalCount} Ausfälle
             </div>
           )}
+
+          {/* Theme Toggle Button - removed since we're always light now */}
         </div>
       </div>
     </header>

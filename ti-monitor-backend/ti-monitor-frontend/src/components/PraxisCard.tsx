@@ -9,13 +9,13 @@ interface PraxisCardProps {
 const getStatusColor = (status: string) => {
   switch (status) {
     case 'ok':
-      return 'border-green-200 hover:border-green-300 hover:shadow-md';
+      return 'border-green-700 hover:border-green-600 hover:shadow-lg';
     case 'degraded':
-      return 'border-yellow-200 hover:border-yellow-300 hover:shadow-md';
+      return 'border-yellow-700 hover:border-yellow-600 hover:shadow-lg';
     case 'down':
-      return 'border-red-200 hover:border-red-300 hover:shadow-md';
+      return 'border-red-700 hover:border-red-600 hover:shadow-lg';
     default:
-      return 'border-slate-200 hover:border-slate-300 hover:shadow-md';
+      return 'border-slate-700 hover:border-slate-600 hover:shadow-lg';
   }
 };
 
@@ -49,27 +49,25 @@ export const PraxisCard: React.FC<PraxisCardProps> = ({ praxis, onClick }) => {
   const okCount = praxis.services.filter(s => s.status === 'ok').length;
   const degradedCount = praxis.services.filter(s => s.status === 'degraded').length;
   const downCount = praxis.services.filter(s => s.status === 'down').length;
-  const statusClass = getStatusColor(praxis.overall_status);
   const dotClass = getStatusDot(praxis.overall_status);
 
   return (
     <div
       onClick={onClick}
-      className={`
-        bg-white border-2 rounded-xl p-6 cursor-pointer
-        transition-all duration-200 hover-lift card-shadow
-        ${statusClass}
-      `}
+      className="relative card-city p-6 cursor-pointer transition-all hover:shadow-lg"
+      style={{ backgroundColor: 'var(--knicks-black)' }}
     >
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex-1">
-          <h3 className="font-bold text-lg text-slate-900">{praxis.name}</h3>
-          <p className="text-sm text-slate-500">{praxis.location}</p>
-        </div>
-        <div className={`w-3 h-3 rounded-full ${dotClass} flex-shrink-0`}></div>
+      {/* Status dot - top right */}
+      <div className={`absolute top-4 right-4 w-3 h-3 rounded-full ${dotClass}`}></div>
+
+      {/* Header */}
+      <div className="pr-8">
+        <h3 className="font-bold text-lg text-white">{praxis.name}</h3>
+        <p className="text-sm text-slate-400">{praxis.location}</p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 mt-4">
+        {/* Service dots */}
         <div className="flex gap-1">
           {praxis.services.map(service => (
             <div
@@ -80,27 +78,29 @@ export const PraxisCard: React.FC<PraxisCardProps> = ({ praxis, onClick }) => {
           ))}
         </div>
 
-        <div className="grid grid-cols-3 gap-2 text-center text-xs">
-          <div className="bg-green-50 rounded p-2">
-            <div className="font-semibold text-green-700">{okCount}</div>
-            <div className="text-green-600 text-xs">OK</div>
+        {/* Stat boxes - flat, no nested borders */}
+        <div className="grid grid-cols-3 gap-3">
+          <div className="rounded p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.04)' }}>
+            <div className="font-mono font-semibold text-green-400 text-lg">{okCount}</div>
+            <div className="label-uppercase text-green-400 mt-1">OK</div>
           </div>
-          <div className="bg-yellow-50 rounded p-2">
-            <div className="font-semibold text-yellow-700">{degradedCount}</div>
-            <div className="text-yellow-600 text-xs">Warn</div>
+          <div className="rounded p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.04)' }}>
+            <div className="font-mono font-semibold text-lg" style={{ color: 'var(--knicks-orange)' }}>{degradedCount}</div>
+            <div className="label-uppercase mt-1" style={{ color: 'var(--knicks-orange)' }}>Warn</div>
           </div>
-          <div className="bg-red-50 rounded p-2">
-            <div className="font-semibold text-red-700">{downCount}</div>
-            <div className="text-red-600 text-xs">Down</div>
+          <div className="rounded p-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.04)' }}>
+            <div className="font-mono font-semibold text-red-400 text-lg">{downCount}</div>
+            <div className="label-uppercase text-red-400 mt-1">Down</div>
           </div>
         </div>
 
-        <div className="pt-3 border-t border-slate-200">
-          <span className="text-xs text-slate-500">Status: </span>
-          <span className={`text-xs font-semibold uppercase tracking-wide ${
-            praxis.overall_status === 'ok' ? 'text-green-600' :
-            praxis.overall_status === 'degraded' ? 'text-yellow-600' :
-            'text-red-600'
+        {/* Overall status */}
+        <div className="pt-3 border-t border-slate-700">
+          <span className="label-uppercase text-slate-500">Status</span>
+          <span className={`ml-2 font-mono font-semibold uppercase tracking-wide ${
+            praxis.overall_status === 'ok' ? 'text-green-400' :
+            praxis.overall_status === 'degraded' ? 'text-yellow-400' :
+            'text-red-400'
           }`}>
             {praxis.overall_status}
           </span>

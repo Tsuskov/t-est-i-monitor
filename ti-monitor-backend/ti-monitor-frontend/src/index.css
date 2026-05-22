@@ -2,8 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --pastel-orange: #F4A78A;
+  --pastel-blue: #9DB4D4;
+  --pastel-light: #FAFBFC;
+  --dark-text: #4A5568;
+  --light-text: #F5F7FA;
+}
+
 body {
-  @apply bg-slate-50 text-slate-900 font-sans;
+  background-color: var(--pastel-light);
+  @apply text-slate-700 font-sans;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
 }
 
 @keyframes fadeIn {
@@ -48,7 +59,62 @@ body {
     animation: pulse-status 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
-  .card-shadow {
-    @apply shadow-sm hover:shadow-md transition-shadow;
+  /* Simple pastel card design */
+  .card-knicks {
+    background-color: #FFFFFF;
+    @apply rounded-lg p-6 relative;
+    border: 1.5px solid var(--pastel-blue);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .card-knicks:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .btn-primary {
+    background-color: var(--pastel-orange);
+    @apply text-white px-4 py-2 rounded font-medium transition-all;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background-color: #EF9476;
+  }
+
+  .btn-secondary {
+    background-color: var(--pastel-blue);
+    color: white;
+    @apply px-4 py-2 rounded font-medium transition-all;
+  }
+
+  .btn-secondary:hover {
+    background-color: #8BA0C0;
+  }
+
+  .badge-orange {
+    background-color: var(--pastel-orange);
+    @apply text-white px-3 py-1 rounded text-xs font-semibold;
+  }
+
+  .badge-blue {
+    background-color: var(--pastel-blue);
+    color: white;
+    @apply px-3 py-1 rounded text-xs font-semibold;
+  }
+
+  .label-uppercase {
+    @apply text-xs font-medium uppercase tracking-wide;
+    color: #9CA3AF;
+  }
+
+  .metric-number {
+    color: var(--pastel-orange);
+    @apply font-mono text-3xl font-bold;
+  }
+
+  .stat-box {
+    background-color: #F7F9FC;
+    @apply rounded p-3;
+    border: 1px solid #E5E9F0;
   }
 }
