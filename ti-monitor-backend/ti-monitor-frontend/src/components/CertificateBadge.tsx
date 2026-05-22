@@ -7,17 +7,25 @@ interface CertificateBadgeProps {
 }
 
 export const CertificateBadge: React.FC<CertificateBadgeProps> = ({ daysRemaining, severity }) => {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  
   const getBgColor = (sev: CertSeverity) => {
-    switch (sev) {
-      case 'critical':
-        return 'bg-red-900 text-red-200';
-      case 'warning':
-        return 'bg-yellow-900 text-yellow-200';
-      case 'ok':
-        return 'bg-green-900 text-green-200';
-      default:
-        return 'bg-slate-700 text-slate-200';
+    if (sev === 'critical') {
+      return isDark
+        ? 'bg-orange-900 text-orange-100'
+        : 'bg-orange-100 text-orange-900';
     }
+    if (sev === 'warning') {
+      return isDark
+        ? 'bg-orange-800 text-orange-100'
+        : 'bg-orange-50 text-orange-800';
+    }
+    if (sev === 'ok') {
+      return isDark
+        ? 'bg-blue-900 text-blue-100'
+        : 'bg-blue-100 text-blue-900';
+    }
+    return isDark ? 'bg-gray-700 text-gray-200' : 'bg-gray-200 text-gray-800';
   };
 
   const getIcon = (sev: CertSeverity) => {

@@ -8,6 +8,8 @@ interface CertificateListProps {
 
 export const CertificateList: React.FC<CertificateListProps> = ({ certificates }) => {
   const [sortBy, setSortBy] = useState<'expiry' | 'severity'>('expiry');
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const accentColor = isDark ? '#1B4DB5' : '#F4681A';
 
   const sorted = [...certificates].sort((a, b) => {
     if (sortBy === 'severity') {
@@ -26,18 +28,18 @@ export const CertificateList: React.FC<CertificateListProps> = ({ certificates }
         <div className="flex gap-4">
           <div>
             <p className="label-uppercase">Kritisch</p>
-            <p className="text-2xl font-bold text-red-400">{critical}</p>
+            <p className="text-2xl font-bold" style={{ color: '#F4681A' }}>{critical}</p>
           </div>
           <div>
             <p className="label-uppercase">Warnung</p>
-            <p className="text-2xl font-bold" style={{ color: 'var(--knicks-orange)' }}>{warning}</p>
+            <p className="text-2xl font-bold" style={{ color: '#F4681A' }}>{warning}</p>
           </div>
         </div>
         <select
           value={sortBy}
           onChange={e => setSortBy(e.target.value as 'expiry' | 'severity')}
           className="card-knicks px-3 py-2 text-sm transition"
-          style={{ border: '2px solid var(--knicks-orange)' }}
+          style={{ border: `1.5px solid ${accentColor}` }}
         >
           <option value="expiry">Nach Ablauf sortieren</option>
           <option value="severity">Nach Schweregrad sortieren</option>
