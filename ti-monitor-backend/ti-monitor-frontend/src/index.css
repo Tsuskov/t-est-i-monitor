@@ -4,25 +4,42 @@
 
 :root {
   --knicks-orange: #F4681A;
+  --knicks-blue: #1B4DB5;
   --pastel-light: #FAFBFC;
   --dark-bg: #1A1F2E;
   --dark-text: #E8EBF0;
   --light-text: #2D3748;
 }
 
-/* LIGHT MODE (default) */
+/* LIGHT MODE (default) - Orange primary, Blue secondary */
 body {
   background-color: var(--pastel-light);
   color: var(--light-text);
   @apply font-sans;
   transition: background-color 0.3s ease, color 0.3s ease;
   font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  
+  --accent-primary: var(--knicks-orange);
+  --accent-secondary: var(--knicks-blue);
+  --card-border: #E5E7EB;
+  --stat-box-bg: #F7F9FC;
+  --stat-box-border: #E5E9F0;
+  --btn-secondary-bg: #E5E7EB;
+  --btn-secondary-text: #2D3748;
 }
 
-/* DARK MODE */
+/* DARK MODE - Blue primary, Orange secondary (reversed) */
 html[data-theme="dark"] body {
   background-color: var(--dark-bg);
   color: var(--dark-text);
+  
+  --accent-primary: var(--knicks-blue);
+  --accent-secondary: var(--knicks-orange);
+  --card-border: var(--knicks-blue);
+  --stat-box-bg: rgba(27, 77, 181, 0.1);
+  --stat-box-border: rgba(27, 77, 181, 0.3);
+  --btn-secondary-bg: #3B4556;
+  --btn-secondary-text: #E8EBF0;
 }
 
 @keyframes fadeIn {
@@ -70,7 +87,7 @@ html[data-theme="dark"] body {
   /* Light Mode Cards */
   .card-knicks {
     background-color: #FFFFFF;
-    border: 1.5px solid #E5E7EB;
+    border: 1.5px solid var(--card-border);
     @apply rounded-lg p-6 relative;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
@@ -83,44 +100,43 @@ html[data-theme="dark"] body {
   /* Dark Mode Cards */
   html[data-theme="dark"] .card-knicks {
     background-color: #252D3D;
-    border: 1.5px solid var(--knicks-orange);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
   html[data-theme="dark"] .card-knicks:hover {
-    box-shadow: 0 4px 16px rgba(244, 104, 26, 0.2);
+    box-shadow: 0 4px 16px rgba(27, 77, 181, 0.2);
   }
 
-  /* Buttons */
+  /* Buttons - Primary uses accent-primary color */
   .btn-primary {
-    background-color: var(--knicks-orange);
+    background-color: var(--accent-primary);
     @apply text-white px-4 py-2 rounded font-medium transition-all;
     border: none;
   }
 
   .btn-primary:hover {
-    background-color: #E85A12;
+    opacity: 0.9;
   }
 
+  /* Buttons - Secondary */
   .btn-secondary {
-    background-color: #E5E7EB;
-    color: #2D3748;
+    background-color: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
     @apply px-4 py-2 rounded font-medium transition-all;
   }
 
-  html[data-theme="dark"] .btn-secondary {
-    background-color: #3B4556;
-    color: #E8EBF0;
+  .btn-secondary:hover {
+    opacity: 0.8;
   }
 
   /* Badges */
   .badge-orange {
-    background-color: var(--knicks-orange);
+    background-color: var(--accent-secondary);
     @apply text-white px-3 py-1 rounded text-xs font-semibold;
   }
 
   .badge-blue {
-    background-color: #3B82F6;
+    background-color: var(--accent-primary);
     color: white;
     @apply px-3 py-1 rounded text-xs font-semibold;
   }
@@ -130,23 +146,16 @@ html[data-theme="dark"] body {
     color: #9CA3AF;
   }
 
-  html[data-theme="dark"] .label-uppercase {
-    color: #9CA3AF;
-  }
-
+  /* Metric numbers use primary accent */
   .metric-number {
-    color: var(--knicks-orange);
+    color: var(--accent-primary);
     @apply font-mono text-3xl font-bold;
   }
 
+  /* Stat boxes */
   .stat-box {
-    background-color: #F7F9FC;
+    background-color: var(--stat-box-bg);
     @apply rounded p-3;
-    border: 1px solid #E5E9F0;
-  }
-
-  html[data-theme="dark"] .stat-box {
-    background-color: rgba(244, 104, 26, 0.1);
-    border: 1px solid rgba(244, 104, 26, 0.3);
+    border: 1px solid var(--stat-box-border);
   }
 }
