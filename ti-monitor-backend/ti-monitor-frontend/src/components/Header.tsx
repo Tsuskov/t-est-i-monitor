@@ -9,13 +9,13 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ wsConnected, criticalCount, theme, onThemeToggle }) => {
   return (
-    <header className="card-knicks border-b-2" style={{ borderBottomColor: 'var(--pastel-blue)', borderLeft: 'none', borderRight: 'none', borderTop: 'none', borderRadius: '0' }}>
+    <header className="card-knicks border-b-2" style={{ borderBottomColor: 'var(--knicks-orange)', borderLeft: 'none', borderRight: 'none', borderTop: 'none', borderRadius: '0' }}>
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-3">
           <div className="text-3xl font-bold">🏥</div>
           <div>
-            <h1 className="text-2xl font-bold" style={{ color: 'var(--pastel-orange)' }}>TI-Monitor</h1>
-            <p className="text-xs" style={{ color: '#9CA3AF' }}>Telematik-Infrastruktur</p>
+            <h1 className="text-2xl font-bold" style={{ color: 'var(--knicks-orange)' }}>TI-Monitor</h1>
+            <p className="text-xs opacity-70">Telematik-Infrastruktur</p>
           </div>
         </div>
         
@@ -34,7 +34,20 @@ export const Header: React.FC<HeaderProps> = ({ wsConnected, criticalCount, them
             </div>
           )}
 
-          {/* Theme Toggle Button - removed since we're always light now */}
+          {/* Theme Toggle Button */}
+          <button
+            onClick={onThemeToggle}
+            className="p-2 rounded transition-all hover:opacity-80"
+            style={{
+              backgroundColor: theme === 'dark' ? 'rgba(244, 104, 26, 0.2)' : '#F0F0F0',
+              border: `2px solid var(--knicks-orange)`,
+              color: 'var(--knicks-orange)',
+              fontSize: '18px'
+            }}
+            title="Toggle dark/light mode"
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
         </div>
       </div>
     </header>

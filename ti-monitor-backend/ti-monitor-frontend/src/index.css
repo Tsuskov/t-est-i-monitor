@@ -3,18 +3,26 @@
 @tailwind utilities;
 
 :root {
-  --pastel-orange: #F4A78A;
-  --pastel-blue: #9DB4D4;
+  --knicks-orange: #F4681A;
   --pastel-light: #FAFBFC;
-  --dark-text: #4A5568;
-  --light-text: #F5F7FA;
+  --dark-bg: #1A1F2E;
+  --dark-text: #E8EBF0;
+  --light-text: #2D3748;
 }
 
+/* LIGHT MODE (default) */
 body {
   background-color: var(--pastel-light);
-  @apply text-slate-700 font-sans;
+  color: var(--light-text);
+  @apply font-sans;
   transition: background-color 0.3s ease, color 0.3s ease;
   font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+}
+
+/* DARK MODE */
+html[data-theme="dark"] body {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
 }
 
 @keyframes fadeIn {
@@ -59,45 +67,60 @@ body {
     animation: pulse-status 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
-  /* Simple pastel card design */
+  /* Light Mode Cards */
   .card-knicks {
     background-color: #FFFFFF;
+    border: 1.5px solid #E5E7EB;
     @apply rounded-lg p-6 relative;
-    border: 1.5px solid var(--pastel-blue);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
   }
 
   .card-knicks:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
 
+  /* Dark Mode Cards */
+  html[data-theme="dark"] .card-knicks {
+    background-color: #252D3D;
+    border: 1.5px solid var(--knicks-orange);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  html[data-theme="dark"] .card-knicks:hover {
+    box-shadow: 0 4px 16px rgba(244, 104, 26, 0.2);
+  }
+
+  /* Buttons */
   .btn-primary {
-    background-color: var(--pastel-orange);
+    background-color: var(--knicks-orange);
     @apply text-white px-4 py-2 rounded font-medium transition-all;
     border: none;
   }
 
   .btn-primary:hover {
-    background-color: #EF9476;
+    background-color: #E85A12;
   }
 
   .btn-secondary {
-    background-color: var(--pastel-blue);
-    color: white;
+    background-color: #E5E7EB;
+    color: #2D3748;
     @apply px-4 py-2 rounded font-medium transition-all;
   }
 
-  .btn-secondary:hover {
-    background-color: #8BA0C0;
+  html[data-theme="dark"] .btn-secondary {
+    background-color: #3B4556;
+    color: #E8EBF0;
   }
 
+  /* Badges */
   .badge-orange {
-    background-color: var(--pastel-orange);
+    background-color: var(--knicks-orange);
     @apply text-white px-3 py-1 rounded text-xs font-semibold;
   }
 
   .badge-blue {
-    background-color: var(--pastel-blue);
+    background-color: #3B82F6;
     color: white;
     @apply px-3 py-1 rounded text-xs font-semibold;
   }
@@ -107,8 +130,12 @@ body {
     color: #9CA3AF;
   }
 
+  html[data-theme="dark"] .label-uppercase {
+    color: #9CA3AF;
+  }
+
   .metric-number {
-    color: var(--pastel-orange);
+    color: var(--knicks-orange);
     @apply font-mono text-3xl font-bold;
   }
 
@@ -116,5 +143,10 @@ body {
     background-color: #F7F9FC;
     @apply rounded p-3;
     border: 1px solid #E5E9F0;
+  }
+
+  html[data-theme="dark"] .stat-box {
+    background-color: rgba(244, 104, 26, 0.1);
+    border: 1px solid rgba(244, 104, 26, 0.3);
   }
 }

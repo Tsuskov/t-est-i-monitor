@@ -42,6 +42,15 @@ function App() {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
+  // Apply theme to document
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
   return (
     <div className="min-h-screen">
       <Header wsConnected={wsConnected} criticalCount={criticalCount} theme={theme} onThemeToggle={toggleTheme} />
